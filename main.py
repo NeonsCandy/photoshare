@@ -9,7 +9,6 @@ from src.api import auth, photos, comments, users
 async def lifespan(app: FastAPI):
     redis_host = os.getenv("REDIS_HOST", "localhost")
     r = redis.Redis(host=redis_host, port=6379, db=0, encoding="utf-8", decode_responses=True)
-    #await FastAPILimiter.init(r)
     yield
     await r.close()
 app = FastAPI(title="PhotoShare API", lifespan=lifespan)
