@@ -14,5 +14,5 @@ REST API сервіс для обміну фотографіями, розроб
 
 1. Клонуйте репозиторій:
    ```bash
-   git clone [https://github.com/NeonsCandy/photoshare.git](https://github.com/your-username/photoshare.git)
+   git clone https://github.com/NeonsCandy/photoshare.git
    cd photoshare
