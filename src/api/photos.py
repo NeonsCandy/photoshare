@@ -79,7 +79,6 @@ async def delete_photo(
     if photo is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Photo not found")
     
-    # Перевірка: чи користувач є власником фото, або має права адміна/модератора
     if photo.user_id != current_user.id and current_user.role not in [Role.admin, Role.moderator]:
         raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not enough permissions to delete this photo")
         
