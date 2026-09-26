@@ -17,7 +17,7 @@ from src.schemas import PhotoTransform
 
 router = APIRouter(prefix="/photos", tags=["photos"])
 
-@router.post("/", response_model=PhotoResponse, status_code=status.HTTP_201_CREATED,dependencies=[Depends(RateLimiter(times=5, seconds=60))])
+@router.post("/", response_model=PhotoResponse, status_code=status.HTTP_201_CREATED)
 async def upload_photo(
     description: str = Form(None),
     tags: str = Form(""), 
@@ -72,12 +72,18 @@ allow_admin = RoleChecker([Role.admin])
 @router.delete("/{photo_id}", status_code=status.HTTP_204_NO_CONTENT)
 async def delete_photo(
     photo_id: int, 
-    current_user: User = Depends(allow_admin), 
+    current_user: User = Depends(get_current_user), 
     db: AsyncSession = Depends(get_db)
 ):
-    photo = await repository_photos.delete_photo(photo_id, db)
+    photo = await repository_photos.get_photo_by_id(photo_id, db)
     if photo is None:
         raise HTTPException(status_code=status.HTTP_404_NOT_FOUND, detail="Photo not found")
+    
+    # Перевірка: чи користувач є власником фото, або має права адміна/модератора
+    if photo.user_id != current_user.id and current_user.role not in [Role.admin, Role.moderator]:
+        raise HTTPException(status_code=status.HTTP_403_FORBIDDEN, detail="Not enough permissions to delete this photo")
+        
+    await repository_photos.delete_photo(photo_id, db)
     return None
 
 @router.post("/{photo_id}/transform")

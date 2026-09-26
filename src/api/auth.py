@@ -43,12 +43,3 @@ async def login(body: OAuth2PasswordRequestForm = Depends(), db: AsyncSession = 
     access_token = await auth_service.create_access_token(data={"sub": user.email})
     return {"access_token": access_token, "token_type": "bearer"}
 
-    @app.get("/api/users/me")
-    async def read_users_me(current_user: User = Depends(get_current_user)):
-        return current_user
-
-    allow_admin = RoleChecker([Role.admin])
-
-    @app.delete("/api/photos/{photo_id}")
-    async def delete_photo_by_admin(photo_id: int, current_user: User = Depends(allow_admin)):
-        return {"message": "Фото видалено адміном"}
